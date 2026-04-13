@@ -97,3 +97,54 @@ def generate_cover_letter(job_analysis, candidate_backgroud):
     return stream_response(messages)
 
 
+# --- Generate resume bullet points --- #
+def generate_resume_bullets(job_analysis, candidate_backgroud):
+    """ Generate resume bullet points based on job analysis and candidate background."""
+    system_prompt = (
+        "You are an expert resume writer. Generate 5 strong, quantified resume bullet points "
+        "that align the candidate's experience with the job requirements. "
+        "Use the format: 'Action verb + what you did + measurable result'. "
+        "Tailor keywords to match the job posting."
+    )
+
+    user_prompt = (
+        f"Here is the job analysis:\n{job_analysis}\n\n"
+        f"Here is the candidate background:\n{candidate_backgroud}\n\n"
+        "Please write 5 resume bullet points based on this information."
+    )
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ]
+
+    return stream_response(messages)
+
+
+# --- Main execution flow --- #
+if __name__ == "__main__":
+    print(" === Smart Job Application Assistant === ")
+    print(f"Model: {MODEL} ({MODE})\n")
+
+    job_url= input("Enter the job posting URL (or press Enter to use sample text): ").strip()
+
+    if job_url:
+        print("\nFetching and analyzing job posting...")
+        job_text = scrape_job_posting(job_url)
+        print(f"Fetched {count_tokens(job_text)} tokens of job text.")
+    else:
+        job_text = input("Enter the job posting text:\n")
+
+    candidate_background = input("\nEnter your background (skills, experience, etc.):\n")
+    print("\nAnalyzing job posting and generating cover letter...")
+    job_analysis = analyze_job(job_text)
+    print("\nGenerating cover letter...")
+    cover_letter = generate_cover_letter(job_analysis, candidate_background)
+    print("\nGenerating resume bullet points...")
+    resume_bullets = generate_resume_bullets(job_analysis, candidate_background)    
+    print("\n=== Cover Letter ===\n")
+    print(cover_letter)
+    print("\n=== Resume Bullet Points ===\n")
+    print(resume_bullets)
+
+    print("\nDone!")
