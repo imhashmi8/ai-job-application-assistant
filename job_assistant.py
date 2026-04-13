@@ -46,7 +46,7 @@ def stream_response(messages):
     print()  # for newline after streaming
     return result
 
-# --- Main function to analyze job posting and generate cover letter --- #
+# --- Main function to analyze job posting --- #
 def analyze_job(job_text):
     """Analyze the job posting and generate a tailored cover letter."""
     system_prompt = (
@@ -72,3 +72,28 @@ def analyze_job(job_text):
     result = json.loads(response.choices[0].message.content)
     print(json.dumps(result, indent=2))
     return result
+
+
+# --- Function to generate cover letter --- #
+def generate_cover_letter(job_analysis, candidate_backgroud):
+    """ Generate a cover letter based on job analysis and candidate backgroud."""
+    system_prompt = (
+        "You are a helpful assistant that generates tailored cover letters based on job analysis and candidate background. "
+        "Use the job analysis to highlight the most relevant skills and experiences from the candidate's background. "
+        "Write a personalized cover letter that effectively connects the candidate's qualifications to the job requirements."
+    )
+
+    user_prompt = (
+        f"Here is the job analysis:\n{job_analysis}\n\n"
+        f"Here is the candidate background:\n{candidate_backgroud}\n\n"
+        "Please write a cover letter based on this information."
+    )
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ]
+
+    return stream_response(messages)
+
+
