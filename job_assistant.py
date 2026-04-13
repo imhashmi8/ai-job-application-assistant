@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from dotenv import load_dotenv
 from openai import OpenAI
 from scraper import scrape_job_posting
@@ -43,4 +44,31 @@ def stream_response(messages):
             print(delta, end="", flush=True)
             result += delta
     print()  # for newline after streaming
+    return result
+
+# --- Main function to analyze job posting and generate cover letter --- #
+def analyze_job(job_text):
+    """Analyze the job posting and generate a tailored cover letter."""
+    system_prompt = (
+        "You are a helpful assistant that analyzes job postings and generates tailored cover letters. "
+        "Extract key requirements, responsibilities, and company culture from the job posting. "
+        "Then, create a personalized cover letter that highlights how the applicant's skills and experience align with the job."
+    )
+
+    user_prompt = (
+        f"Here is the job posting:\n\n{job_text}\n\nPlease analyze it and write a cover letter."
+    )
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ]
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=messages,
+        max_tokens=1000,
+        temperature=0.7,
+        response_format={"type": "json_object"},
+    )
+    result = json.loads(response.choices[0].message.content)
+    print(json.dumps(result, indent=2))
     return result
