@@ -147,6 +147,3 @@ AWS · Azure · Kubernetes · Terraform · Python
 
 ---
 
-## License
-
-MIT
